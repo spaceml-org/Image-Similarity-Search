@@ -21,6 +21,7 @@ def get_embeddings(ckpt_path,data_loader, device):
 
   embedding = []
   simclr_model = torch.load(ckpt_path)
+  simclr_model.eval()
   # simclr_model.to(device)
   for step,(x,y) in enumerate(data_loader):
     x = x.to(device)
