@@ -30,7 +30,6 @@ def get_embeddings(ckpt_path,data_loader, device):
   return embedding
 
 def prepare_tree(num_nodes, features_list_x, path, num_trees):
-  
   t = AnnoyIndex(num_nodes, 'euclidean')
   for i in range(len(features_list_x)):
     t.add_item(i,features_list_x[i])
@@ -51,7 +50,7 @@ def main():
   parser.add_argument("--DATA_PATH",type = str, help="Path to image to perform inference")
   parser.add_argument("--ckpt_path",type = str, help="Location of model checkpoint")
   parser.add_argument("--annoy_path",type = str,help="Location to save annoy file (end with .ann)")
-  parser.add_argument("--embedding_path",type = str, help="Location to save embeddings pickle file")
+  # parser.add_argument("--embedding_path",type = str, help="Location to save embeddings pickle file")
   parser.add_argument("--device", default = 'cuda', type= str, help="device to run inference on" )
   parser.add_argument("--num_nodes",type = int, help="Number of nodes in the final dense layer of the model")
   parser.add_argument("--batch_size",default =64, type = int, help="Batch Size for dataloader")
@@ -61,7 +60,7 @@ def main():
   size = args.image_size
   ckpt_path = args.ckpt_path
   annoy_path = args.annoy_path
-  embedding_path = args.embedding_path
+  # embedding_path = args.embedding_path
   num_nodes = args.num_nodes
   batch_size = args.batch_size
   device = args.device
@@ -69,7 +68,7 @@ def main():
   data_loader, dataset_paths = build_loader(DATA_PATH, size, batch_size)
   embedding = get_embeddings(ckpt_path, data_loader, device)
   print("Annoy file stored at",prepare_tree(num_nodes, embedding, annoy_path, num_trees = 50))
-  print("Embeddings Pickle file stored at",pickle_filepaths(dataset_paths,embedding_path))
+  # print("Embeddings Pickle file stored at",pickle_filepaths(dataset_paths,embedding_path))
 
 if __name__ == "__main__":
   main()
