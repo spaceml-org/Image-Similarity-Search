@@ -8,9 +8,10 @@ from annoy import AnnoyIndex
 from argparse import ArgumentParser
 from torch.utils.data import DataLoader
 from torchvision import transforms
+import matplotlib.image as mpimg
+from imutils import paths
 
-
-def load_dependencies(annoy_path,embedding_path,num_nodes):
+def load_dependencies(annoy_path,num_nodes):
   u = AnnoyIndex(num_nodes, 'euclidean')
   u.load(annoy_path)
 
@@ -55,11 +56,11 @@ def plot_images(filenames, distances, n):
             ax.set_title("Similar Image\n" + classname_filename(filenames[i]) +
                          "\nDistance: " + str(float("{0:.2f}".format(distances[i]))))
         plt.imshow(image)
-        plt.savefig('Nearest_images_' + filesnames[0].split('/')[-1]  + '.pdf', format='pdf', dpi=1000)
+        plt.savefig('Nearest_images_' + filenames[0].split('/')[-1]  + '.png')
+    plt.show()
 
 
-
-def get_nn_annoy(u, image_embedding, features_list_y, disp = False, n):
+def get_nn_annoy(u, image_embedding, features_list_y, n, disp = False):
   
   inds, dists = u.get_nns_by_vector(image_embedding, n ,include_distances = True)
   
@@ -85,18 +86,18 @@ def main():
   # size = args.image_size
   ckpt_path = args.ckpt_path
   annoy_path = args.annoy_path
-  embedding_path = args.embedding_path
   device = args.device
   n = args.n_closest
   data_path = args.data_path
   model = load_model(ckpt_path,device)
-  u = load_dependencies(annoy_path, embedding_path, 512)
+  u = load_dependencies(annoy_path, 512)
   embedding = inference(model, image_path)
   dataset_paths = list(paths.list_images(data_path))
-  inds, dists = get_nn_annoy(u, embedding, dataset_paths, True, n)
+  inds, dists = get_nn_annoy(u, embedding, dataset_paths, n, False)
   chosen_files= [dataset_paths[i] for i in inds]
   chosen_files.insert(0, image_path)
   dists.insert(0, 0.0)
+  print('Plotting Images')
   plot_images(chosen_files , dists, n)
 if __name__ == "__main__":
   main()
