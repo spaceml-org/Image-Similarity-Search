@@ -31,7 +31,6 @@ def inference(model, image_path):
   im = Image.open(image_path).convert('RGB')
   image = np.transpose(im, (2,0,1)).copy()
   im = torch.tensor(image).unsqueeze(0).float().cuda()
-  print(im.shape)
   x = model(im)
 
   return x[0][0]
@@ -42,12 +41,13 @@ def classname(str):
 def classname_filename(str):
     return str.split('/')[-2] + '/' + str.split('/')[-1]
 
-def plot_images(filenames, distances, n):
+def plot_images(filenames, distances):
     images = []
     for filename in filenames:
         images.append(mpimg.imread(filename))
-    plt.figure(figsize=(20, 10))
-    columns = n
+    plt.figure(figsize=(10, 10))
+    columns = 2
+    print("Number retrieved",len(images))
     for i, image in enumerate(images):
         ax = plt.subplot(len(images) / columns + 1, columns, i + 1)
         if i == 0:
@@ -82,6 +82,7 @@ def main():
   parser.add_argument("--n_closest", type= int, default = 5, help = "number of closest points")
   parser.add_argument('--data_path', type= str, help = 'Path to dataset')
   args = parser.parse_args()
+
   image_path = args.image_path
   # size = args.image_size
   ckpt_path = args.ckpt_path
@@ -89,16 +90,20 @@ def main():
   device = args.device
   n = args.n_closest
   data_path = args.data_path
+
   model = load_model(ckpt_path,device)
   u = load_dependencies(annoy_path, 512)
   embedding = inference(model, image_path)
+
   dataset_paths = list(paths.list_images(data_path))
-  inds, dists = get_nn_annoy(u, embedding, dataset_paths, n, False)
+  inds, dists = get_nn_annoy(u, embedding, dataset_paths, n, True)
   chosen_files= [dataset_paths[i] for i in inds]
   chosen_files.insert(0, image_path)
   dists.insert(0, 0.0)
   print('Plotting Images')
-  plot_images(chosen_files , dists, n)
+  plot_images(chosen_files , dists)
+
+
 if __name__ == "__main__":
   main()
   
