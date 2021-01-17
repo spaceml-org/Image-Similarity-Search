@@ -27,7 +27,9 @@ def get_embeddings(ckpt_path,data_loader, device):
     x = x.to(device)
     # print(simclr_model(x))
     embedding.extend(simclr_model(x)[0].detach().cpu().numpy())
-  print("Embeddings Length:", len(embedding))
+  print("Number of Embeddings:", len(embedding))
+  print("Shape of Single Embedding:",embedding[0].shape)
+  print(embedding[0])
   return embedding
 
 def prepare_tree(num_nodes, features_list_x, path, num_trees):
@@ -36,7 +38,7 @@ def prepare_tree(num_nodes, features_list_x, path, num_trees):
     t.add_item(i,features_list_x[i])
   t.build(num_trees)
   t.save(path)
-  print("Tree saved at:",path)
+  # print("Tree saved at:",path)
   return path
 
 def pickle_filepaths(dataset_paths,pickle_path):
@@ -54,6 +56,7 @@ def main():
   # parser.add_argument("--embedding_path",type = str, help="Location to save embeddings pickle file")
   parser.add_argument("--device", default = 'cuda', type= str, help="device to run inference on" )
   parser.add_argument("--num_nodes",type = int, help="Number of nodes in the final dense layer of the model")
+  parser.add_argument("--num_trees",default = 50, type = int, help="Number of trees in Annoy")
   parser.add_argument("--batch_size",default =64, type = int, help="Batch Size for dataloader")
 
   args = parser.parse_args()
@@ -64,11 +67,12 @@ def main():
   # embedding_path = args.embedding_path
   num_nodes = args.num_nodes
   batch_size = args.batch_size
+  num_trees = args.num_trees
   device = args.device
 
   data_loader, dataset_paths = build_loader(DATA_PATH, size, batch_size)
   embedding = get_embeddings(ckpt_path, data_loader, device)
-  print("Annoy file stored at",prepare_tree(num_nodes, embedding, annoy_path, num_trees = 50))
+  print("Annoy file stored at",prepare_tree(num_nodes, embedding, annoy_path, num_trees = num_trees))
   # print("Embeddings Pickle file stored at",pickle_filepaths(dataset_paths,embedding_path))
 
 if __name__ == "__main__":
