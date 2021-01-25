@@ -45,11 +45,13 @@ def plot_images(filenames, distances):
     images = []
     for filename in filenames:
         images.append(mpimg.imread(filename))
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(15, 15))
     columns = 2
     print("Number retrieved",len(images))
     for i, image in enumerate(images):
         ax = plt.subplot(len(images) / columns + 1, columns, i + 1)
+        ax.axis('off')
+        plt.tight_layout()
         if i == 0:
             ax.set_title("Query Image\n" + classname_filename(filenames[i]))
         else:
