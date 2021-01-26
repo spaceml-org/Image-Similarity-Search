@@ -1,5 +1,4 @@
-<a href="https://ibb.co/DVLKb4S"><img src="https://i.ibb.co/2n5K6qf/Image-Similarity-Search.png" alt="Image-Similarity-Search" border="0" width="100%"></a>
-
+<a href="https://ibb.co/Qb7NhCk"><img src="https://i.ibb.co/f1VpZn9/Image-Similarity-Search.png" alt="Image-Similarity-Search" border="0" width="100%"></a>
 Image Similarity Search is a tool that performs super fast image retrieval on PyTorch models for better embedding space interpretability.
 
 
