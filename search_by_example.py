@@ -14,9 +14,6 @@ from imutils import paths
 def load_dependencies(annoy_path,num_nodes):
   u = AnnoyIndex(num_nodes, 'euclidean')
   u.load(annoy_path)
-
-  # with open(embedding_path, 'rb') as handle:
-  #   dataset_paths = pickle.load(handle)
   return u
 
 def load_model(ckpt_path, device):
@@ -45,7 +42,7 @@ def plot_images(filenames, distances):
     images = []
     for filename in filenames:
         images.append(mpimg.imread(filename))
-    plt.figure(figsize=(15, 15))
+    plt.figure(figsize=(10, 10))
     columns = 2
     print("Number retrieved",len(images))
     for i, image in enumerate(images):
@@ -100,8 +97,6 @@ def main():
   dataset_paths = list(paths.list_images(data_path))
   inds, dists = get_nn_annoy(u, embedding, dataset_paths, n, True)
   chosen_files= [dataset_paths[i] for i in inds]
-  chosen_files.insert(0, image_path)
-  dists.insert(0, 0.0)
   print('Plotting Images')
   plot_images(chosen_files , dists)
 
