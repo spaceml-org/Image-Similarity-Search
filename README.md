@@ -45,7 +45,7 @@ Simply run the ```search_by_example.py``` to perform Image Retrieval on a query 
 
 and a few other optional arguments (check file)
 
-Running this script will generate a matplotlib visualisation containing the query and the retrieved images. Check out [_this example_](https://i.ibb.co/TPbbxf5/image.png). 
+Running this script will generate a matplotlib visualisation containing the query and the retrieved images. Check out [_this example_](https://i.ibb.co/jDg8QJv/image.png). 
 
 
 Example: 
