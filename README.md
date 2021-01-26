@@ -53,7 +53,9 @@ Example:
 python search_by_example.py --image_path '/content/Images/forest03.tif' --ckpt_path '/content/pytorch_model.pt' --annoy_path "/content/annoy_file.ann" --data_path "/content/UCMerced_LandUse/Images" --n_closest 5  
 ```
 
+## Dependencies
 
+Install the necessary packages from requirements.txt using ```pip install -r requirements.txt``` before you run the scripts.
 
 ## TODO
 - [X] Add Annoy Support
