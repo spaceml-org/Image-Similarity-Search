@@ -8,6 +8,7 @@ Image Similarity Search is a tool that performs super fast image retrieval on Py
 
 ## How it works
 <a href="https://ibb.co/17Wpdpz"><img src="https://i.ibb.co/CmGXMXP/how-it-works.png" alt="how-it-works" border="0"></a>
+
 That's it really. There are functions in the two files provided that: 
 * Generate embeddings from your model based on your Dataset.
 * Index your Image embeddings to an Annoy tree. 
