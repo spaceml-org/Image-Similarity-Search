@@ -33,7 +33,7 @@ and a few other optional arguments (check file).
 
 Example: 
 ```bash
-python indexer.py --image_size 64 --DATA_PATH "/content/UCMerced_LandUse/Images"   --embedding_size 512 --ckpt_path "/content/pytorch_model.pt" --annoy_path "/content/annoy_file.ann" 
+python indexer.py --DATA_PATH "/content/UCMerced_LandUse/Images"   --embedding_size 512 --ckpt_path "/content/pytorch_model.pt" --annoy_path "/content/annoy_file.ann" 
 ```
 
 ### 2. Retrieval 
