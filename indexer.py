@@ -19,7 +19,7 @@ def get_embeddings_test(DATA_PATH, ckpt, size, embedding_size):
     for im in os.listdir(f'{DATA_PATH}/{folder}'):
       ims.append(f'{DATA_PATH}/{folder}/{im}')
   
-  model = torch.load(ckpt)
+  model = torch.load(ckpt) if device == 'cuda' else torch.load(ckpt, map_location = 'cpu')
   model.eval()
   model.cuda()
   t = transforms.Resize((size, size))
