@@ -19,6 +19,8 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 import faiss
 from indexer_class import Indexer  
+from indexer_class import get_model
+global index 
 
 st.title('Image Similarity Search')
 if torch.cuda.is_available():
@@ -26,26 +28,43 @@ if torch.cuda.is_available():
 else:
     device = 'cpu'
 
+# def increment_counter(model):
+#     st.write('INSIDE INCREMENT', model)
+#     # model = get_model(model)
+#     st.session_state.model = model
+
+if 'indexer' not in st.session_state:
+    st.session_state['indexer'] = None
+    st.session_state.model = None
+    st.session_state['index_file'] = None
 with st.form('sidebar'):
     with st.sidebar:
         model = st.file_uploader("Upload your model", type=['pt','pth'])
-        DATA_PATH = st.text_input("Enter data path (absolute)")
-        embedding_size = int(st.number_input('Model Embedding size'))        
+        st.write('AFTER UPLOAD', model)
+        DATA_PATH = st.text_input("Enter data path (absolute)", value= '/Users/tarun/Documents/UCMerced_LandUse/Images')
+        embedding_size = int(st.number_input('Model Embedding size', value= 21))
+        n_neighbors = int(st.number_input('Num Neighbors', value= 5))
         submitted = st.form_submit_button('Create Index')
         st.write(submitted)
-
+        
 if submitted:
-    st.write('Creating index file')
-    index = Indexer(DATA_PATH, model, embedding_size = embedding_size, device = device)
-    st.write('Class Initialized ☑️')
-    time.sleep(1)
-    image = st.file_uploader("Upload Query Image", type=['png','jpeg', 'jpg'])
+        st.write('Creating index file')
+        index = Indexer(DATA_PATH, model, embedding_size = embedding_size, device = device)
+        index_file = index.get_index()
+        st.session_state['indexer'] = index
+        st.session_state.model = model
+        st.session_state['index_file'] = index_file 
+        st.write('Class Initialized ☑️')
+        time.sleep(1)
+
+image = st.file_uploader("Upload Query Image", type=['png','jpeg', 'jpg'])
+image_upload = st.button('Submit')
+
+if image_upload:
     if image is not None:
         image = read_image(image)
-        # st.image(image)
-        time.sleep(1)
-        fig = index.process_image(image)
-        # streamlit.pyplot(fig=fig, clear_figure=False)
+        fig = st.session_state['indexer'].process_image(image)
+        st.pyplot(fig=fig, clear_figure=True)
 
         
 
