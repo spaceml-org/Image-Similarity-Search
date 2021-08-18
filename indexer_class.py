@@ -13,12 +13,12 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 import faiss
 import streamlit as st
-
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class Indexer:
-    @st.cache(suppress_st_warning=True)
+    # @st.cache(suppress_st_warning=True)
     def __init__(self, DATA_PATH, model, img_size = 224, embedding_size = 128, device = device) -> None:
         self.model = get_model(model)
         self.DATA_PATH = DATA_PATH
@@ -27,7 +27,9 @@ class Indexer:
         self.images_list = [path[0] for path in images_list]
         self.index = index_gen(self.embeddings)
           # TODO Perform caching till this step, as an init and automatically process packets as they come in. Convert to a class when integrating into streamlit 
-        
+    def get_index(self):
+        return self.index 
+
     def process_image(self, img, n_neighbors = 5):
         src = get_embedding(self.model, img)
         scores, neighbours = self.index.search(x=src, k= n_neighbors)
@@ -76,14 +78,14 @@ def index_gen(embeddings):
     return index
 
 def get_fig(neighbours, images_list):
-    fig, axarr = plt.subplots(len(neighbours),1,figsize=(15,30))
+    fig, axarr = plt.subplots(1, len(neighbours), figsize = (5, 5))
     plt.axis('off')
     for i in range(len(neighbours)):
         im = Image.open(images_list[neighbours[i]]).convert('RGB')
+        axarr[i].imshow(im)
         axarr[i].axis('off')
-        axarr[i].set_title(neighbours[i])
     return fig #Returns fig to directly push to streamlit
-
+    
 def get_embedding(model,im):
     def to_tensor(pil):
         return torch.tensor(np.array(pil)).permute(2,0,1).float()
