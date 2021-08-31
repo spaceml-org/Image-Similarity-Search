@@ -27,8 +27,6 @@ class Indexer:
         self.images_list = [path[0] for path in images_list]
         self.index = index_gen(self.embeddings)
           # TODO Perform caching till this step, as an init and automatically process packets as they come in. Convert to a class when integrating into streamlit 
-    def get_index(self):
-        return self.index 
 
     def process_image(self, img, n_neighbors = 5):
         src = get_embedding(self.model, img)
@@ -66,7 +64,8 @@ def get_matrix(model, DATA_PATH, image_size = 224, embedding_size = 2048) -> np.
             x = batch[0].cuda() if device == 'cuda' else batch[0]
             embeddings = model(x)
             data_matrix = torch.cat([data_matrix, embeddings])
-            my_bar.progress(int(100 * i / len(loader)))
+            my_bar.progress(int(100 * i / len(loader))) 
+        my_bar.progress(100)
     return data_matrix.cpu().detach().numpy(), dataset.imgs
 
 def index_gen(embeddings):
