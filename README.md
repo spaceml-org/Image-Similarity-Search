@@ -1,9 +1,24 @@
 <a href="https://ibb.co/gjntjtx"><img src="https://i.ibb.co/98My8y7/Screenshot-2021-09-01-at-3-16-59-PM.png" alt="Screenshot-2021-09-01-at-3-16-59-PM" border="0"  width="100%"></a>
 
+---
+<div align="center">
+
+<p align="center">
+  Published by <a href="http://spaceml.org/">SpaceML</a> •
+  <a href="https://arxiv.org/abs/2012.10610">About SpaceML</a>
+</p>
+
+[![Python Version](https://img.shields.io/badge/python-3.5%20|%203.6%20|%203.7%20|%203.8-blue.svg)](https://www.python.org/)
+[![CUDA](https://img.shields.io/badge/Cuda-10%20|%2011.0-4dc71f.svg)](https://docs.nvidia.com/deeplearning/dali/user-guide/docs/installation.html)
+[![Pip Package](https://img.shields.io/badge/Pip%20Package-Coming%20Soon-0073b7.svg)](https://pypi.org/project/pip/)
+[![Docker](https://img.shields.io/badge/Docker%20Image-Coming%20Soon-34a0ef.svg)](https://www.docker.com/)
+</div>
+
+
 Image Similarity Search is an app that helps perform super fast image retrieval on PyTorch models for better embedding space interpretability.
 
 
-## How it works
+# How it works
 <a href="https://ibb.co/jrmg7Bw"><img src="https://i.ibb.co/0GThP89/Screenshot-2021-09-01-at-7-27-49-PM.png" alt="Screenshot-2021-09-01-at-7-27-49-PM" border="0"></a>
 
 That's it really. There are functions in the two files provided that: 
@@ -12,14 +27,14 @@ That's it really. There are functions in the two files provided that:
 * Performs Similarity Search to retrieve n closest images to your query.
 * Visually shows the images chosen, and allows to search with the index file several times.
 
-## Usage
+# Usage
 
 The app was built with streamlit, and it can be run locally by launching a Streamlit server from the repository directory. 
 
 ```
 streamlit run app.py
 ```
-### Steps
+## Steps
 
 1. Upload the model file in .pt or .pth format. (Ignore default file limit)
 Note : State dicts are not supported due to the underlying class dependency. 
@@ -40,12 +55,12 @@ unzip -qq UCMerced_LandUse.zip
 ```
 
 
-## Dependencies
+# Dependencies
 
 Install the necessary packages from requirements.txt using ```pip install -r requirements.txt``` before you run the scripts.
 
 The app is supported on both CPU and CUDA enabled devices. 
-## TODO
+# TODO
 - [X] Add FAISS Support
 - [X] Command Line Tool -> Streamlit App
 - [ ] Allow uploading existing indices
