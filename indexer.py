@@ -1,82 +1,107 @@
 from torch.utils.data import DataLoader
-from annoy import AnnoyIndex
-from torchvision import transforms
 from argparse import ArgumentParser
-
+import matplotlib.pyplot as plt
 import torchvision.datasets as datasets
 import torch
+import logging
 import pickle
 import os
 import numpy as np
 from tqdm.notebook import tqdm
 import PIL.Image as Image
 from torchvision import transforms
+from torchvision.datasets import ImageFolder
+import faiss
+import streamlit as st
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-def get_embeddings_test(DATA_PATH, ckpt, size, embedding_size):
-  ims = []
-  for folder in os.listdir(DATA_PATH):
-    for im in os.listdir(f'{DATA_PATH}/{folder}'):
-      ims.append(f'{DATA_PATH}/{folder}/{im}')
-  
-  model = torch.load(ckpt)
-  model.eval()
-  model.cuda()
-  t = transforms.Resize((size, size))
-  embedding_matrix = torch.empty(size= (0, embedding_size)).cuda()
-  
-  for f in tqdm(ims):
+class Indexer:
+    # @st.cache(suppress_st_warning=True)
+    def __init__(self, DATA_PATH, model, img_size = 224, embedding_size = 128, device = device) -> None:
+        self.model = get_model(model)
+        self.DATA_PATH = DATA_PATH
+        st.write('Generating embeddings')
+        self.embeddings, images_list = get_matrix(self.model, self.DATA_PATH, img_size, embedding_size)
+        self.images_list = [path[0] for path in images_list]
+        self.index = index_gen(self.embeddings)
+          # TODO Perform caching till this step, as an init and automatically process packets as they come in. Convert to a class when integrating into streamlit 
+
+    def process_image(self, img, n_neighbors = 5):
+        src = get_embedding(self.model, img)
+        scores, neighbours = self.index.search(x=src, k= n_neighbors)
+        fig = get_fig(neighbours[0],self.images_list)
+        #TODO do a streamlit write for this returned subplot
+
+def get_model(model) -> dict:
+
+    model = torch.load(model) if device == 'cuda' else torch.load(model, map_location = 'cpu')
+    return model
+
+def get_matrix(model, DATA_PATH, image_size = 224, embedding_size = 2048) -> np.ndarray:
+    def to_tensor(pil):
+        return torch.tensor(np.array(pil)).permute(2,0,1).float()
+
+    t = transforms.Compose([
+                            transforms.Resize((image_size, image_size)),
+                            transforms.Lambda(to_tensor)
+                            ])
+
+    dataset = ImageFolder(DATA_PATH, transform = t)
+    model.eval()
+    if device == 'cuda':
+        model.cuda()
+    size = embedding_size #@Ajay TODO Check this please. What should be the embedding size?
     with torch.no_grad():
-      im = Image.open(f).convert('RGB')
-      im = t(im)
-      im = np.asarray(im).transpose(2, 0, 1)
-      im = torch.Tensor(im).unsqueeze(0).cuda()
-      embedding = model(im)[0]
-      embedding_matrix = torch.vstack((embedding_matrix, embedding))
-  print('Embedding Shape', embedding_matrix.shape)
-  return embedding_matrix.detach().cpu().numpy()
+        data_matrix = torch.empty(size = (0, size)).cuda() if device == 'cuda' else torch.empty(size = (0, size))
+        bs = 128
+        if len(dataset) < bs:
+          bs = 1
+        loader = DataLoader(dataset, batch_size = bs, shuffle = False)
+        my_bar = st.progress(0)
+        for i, batch in enumerate(loader):
+            x = batch[0].cuda() if device == 'cuda' else batch[0]
+            embeddings = model(x)
+            data_matrix = torch.cat([data_matrix, embeddings])
+            my_bar.progress(int(100 * i / len(loader))) 
+        my_bar.progress(100)
+    return data_matrix.cpu().detach().numpy(), dataset.imgs
 
+def index_gen(embeddings):
+    d = embeddings.shape[-1]
+    index = faiss.IndexFlatL2(d)
+    index.add(embeddings)
+    faiss.write_index(index, 'index.bin')
+    st.write("Index created. Stored as index.bin")
+    return index
 
-def prepare_tree(num_nodes, features_list_x, path, num_trees):
-  t = AnnoyIndex(num_nodes, 'euclidean')
-  for i in range(len(features_list_x)):
-    t.add_item(i,features_list_x[i])
-  t.build(num_trees)
-  t.save(path)
-  return path
+def get_fig(neighbours, images_list):
+    fig, axarr = plt.subplots(1, len(neighbours), figsize = (7, 7))
+    plt.axis('off')
+    for i in range(len(neighbours)):
+        im = Image.open(images_list[neighbours[i]]).convert('RGB')
+        axarr[i].imshow(im)
+        axarr[i].axis('off')
+    return fig #Returns fig to directly push to streamlit #Returns fig to directly push to streamlit
+    
 
-def pickle_filepaths(dataset_paths,pickle_path):
-  with open(pickle_path, 'wb') as handle:
-    pickle.dump(dataset_paths, handle, protocol=pickle.HIGHEST_PROTOCOL)
-  return pickle_path
+def get_embedding(model,im):
+    def to_tensor(pil):
+        return torch.tensor(np.array(pil)).permute(2,0,1).float()
 
-def main():
+    t = transforms.Compose([
+                            transforms.Resize((224,224)),
+                            transforms.Lambda(to_tensor)
+                            ])
+    model.eval()
+    if device == 'cuda':
+            model.cuda()
+    datapoint = t(im).unsqueeze(0).cuda() if device == 'cuda' else t(im).unsqueeze(0) #only a single datapoint so we unsqueeze to add a dimension
+    with torch.no_grad():
+        embedding = model(datapoint) #get_embedding
+    return embedding.detach().cpu().numpy()
 
-  parser = ArgumentParser()
-  parser.add_argument("--image_size", default = 256, type=int, help="Size of the image")
-  parser.add_argument("--DATA_PATH",type = str, help="Path to image to perform inference")
-  parser.add_argument("--ckpt_path",type = str, help="Location of model checkpoint")
-  parser.add_argument("--annoy_path",type = str,help="Location to save annoy file (end with .ann)")
-  parser.add_argument("--embedding_size", default= 128, type = int, help="Image size for embedding")
-  parser.add_argument("--device", default = 'cuda', type= str, help="device to run inference on" )
-  parser.add_argument("--num_nodes",type = int, help="Number of nodes in the final dense layer of the model")
-  parser.add_argument("--num_trees",default = 50, type = int, help="Number of trees in Annoy")
-  parser.add_argument("--batch_size",default =64, type = int, help="Batch Size for dataloader")
-
-  args = parser.parse_args()
-  DATA_PATH = args.DATA_PATH
-  size = args.image_size
-  ckpt_path = args.ckpt_path
-  annoy_path = args.annoy_path
-  num_nodes = args.num_nodes
-  batch_size = args.batch_size
-  emb_size = args.embedding_size
-  num_trees = args.num_trees
-  device = args.device
-
-  embedding = get_embeddings_test(DATA_PATH, ckpt_path, size, emb_size)
-  print("Annoy file stored at",prepare_tree(num_nodes, embedding, annoy_path, num_trees = num_trees))
-
-if __name__ == "__main__":
-  main()
-
+def read_image(img_byte):
+    img = Image.open(img_byte).convert('RGB')
+    return img
