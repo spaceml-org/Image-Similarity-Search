@@ -53,6 +53,7 @@ and download the dataset using the command
 wget http://weegee.vision.ucmerced.edu/datasets/UCMerced_LandUse.zip
 unzip -qq UCMerced_LandUse.zip
 ```
+Default embedding size is 21. 
 
 
 # Dependencies
