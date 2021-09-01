@@ -6,3 +6,4 @@ matplotlib
 numpy 
 pickle
 imutils 
+faiss
