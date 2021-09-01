@@ -19,13 +19,13 @@ Image Similarity Search is an app that helps perform super fast image retrieval 
 
 
 # How it works
-<a href="https://ibb.co/jrmg7Bw"><img src="https://i.ibb.co/0GThP89/Screenshot-2021-09-01-at-7-27-49-PM.png" alt="Screenshot-2021-09-01-at-7-27-49-PM" border="0"></a>
+<a href="https://ibb.co/MNT50qW"><img src="https://i.ibb.co/tCfPryk/Screenshot-2021-09-01-at-8-23-35-PM.png" alt="Screenshot-2021-09-01-at-8-23-35-PM" border="0"></a>
 
 That's it really. There are functions in the two files provided that: 
 * Generate embeddings from your model based on your Dataset.
 * Index your Image embeddings to an FAISS index file.  
 * Performs Similarity Search to retrieve n closest images to your query.
-* Visually shows the images chosen, and allows to search with the index file several times.
+* Visually shows the nearest images, and the app allows you to search with the index file several times.
 
 # Usage
 
