@@ -66,7 +66,7 @@ if submitted:
 
 if st.session_state['index_progress']:
     with st.form('image_similarity'):
-        image = st.file_uploader("Upload Query Image", type=['png','jpeg', 'jpg'])
+        image = st.file_uploader("Upload Query Image", type=['png','jpeg', 'jpg', 'tif'])
         submitted_1 = st.form_submit_button('Search')
 
     if submitted_1:
