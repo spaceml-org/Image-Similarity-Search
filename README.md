@@ -60,7 +60,7 @@ Default embedding size is 21.
 
 Install the necessary packages from requirements.txt using ```pip install -r requirements.txt``` before you run the scripts.
 
-The app using Facebook AI's FAISS package to perform similarity search. Install that using the instructions given [here](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md).
+The app uses Facebook AI's FAISS package to perform similarity search. Install that using the instructions given [here](https://github.com/facebookresearch/faiss/blob/main/INSTALL.md) based on your hardware. 
 
 The app is supported on both CPU and CUDA enabled devices. 
 # TODO
