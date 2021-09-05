@@ -29,7 +29,7 @@ if torch.cuda.is_available():
 else:
     device = 'cpu'
 
-def create_temp_file(query, output_file="/tmp/query.png"):
+def create_temp_file(query, output_file="query.png"):
     """create_temp_file.
     :param query:
     :param output_file:
