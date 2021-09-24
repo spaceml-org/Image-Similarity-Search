@@ -4,6 +4,5 @@ streamlit
 tqdm
 matplotlib
 numpy 
-pickle
 imutils 
 
