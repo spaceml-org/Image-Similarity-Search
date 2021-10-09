@@ -1,8 +1,6 @@
-<a href="https://ibb.co/gjntjtx"><img src="https://i.ibb.co/98My8y7/Screenshot-2021-09-01-at-3-16-59-PM.png" alt="Screenshot-2021-09-01-at-3-16-59-PM" border="0"  width="100%"></a>
 
----
 <div align="center">
-
+  <img src="https://github.com/spaceml-org/Image-Similarity-Search/blob/master/icons/image-sim-complex-header.jpg" >
 <p align="center">
   Published by <a href="http://spaceml.org/">SpaceML</a> •
   <a href="https://arxiv.org/abs/2012.10610">About SpaceML</a>
