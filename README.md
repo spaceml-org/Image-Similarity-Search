@@ -82,4 +82,14 @@ The dataset is downloaded and unzipped in your present working directory.
 
 *Pull requests are more than welcomed!*
 
+## Citation
+If you find Image Similarity Search useful in your research, please consider citing the github code for this tool:
+```
+@code{
+  title={Image Similarity Search,
+},
+  url={https://github.com/spaceml-org/Image-Similarity-Search/},
+  year={2021}
+}
+```
 
