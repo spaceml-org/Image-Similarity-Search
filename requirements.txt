@@ -1,0 +1,8 @@
+torch 
+torchvision
+streamlit 
+tqdm
+matplotlib
+numpy 
+imutils 
+
